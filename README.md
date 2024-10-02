@@ -1,2 +1,47 @@
-# linear-rgression
+# Importing libraries
+library(mlbench) # Contains several benchmark data sets (especially the Boston Housing dataset)
+library(caret) # Package for machine learning algorithms / CARET stands for Classification And REgression Training
+
+# Importing the Boston Housing data set
+data(BostonHousing)
+
+head(BostonHousing)
+
+# Check to see if there are missing data?
+sum(is.na(BostonHousing))
+
+# To achieve reproducible model; set the random seed number
+set.seed(100)
+
+# Performs stratified random split of the data set
+TrainingIndex <- createDataPartition(BostonHousing$medv, p=0.8, list = FALSE)
+TrainingSet <- BostonHousing[TrainingIndex,] # Training Set
+TestingSet <- BostonHousing[-TrainingIndex,] # Test Set
+
+
+###############################
+
+# Build Training model
+Model <- train(medv ~ ., data = TrainingSet,
+               method = "lm",
+               na.action = na.omit,
+               preProcess=c("scale","center"),
+               trControl= trainControl(method="none")
+)
+
+# Apply model for prediction
+Model.training <-predict(Model, TrainingSet) # Apply model to make prediction on Training set
+Model.testing <-predict(Model, TestingSet) # Apply model to make prediction on Testing set
+
+# Model performance (Displays scatter plot and performance metrics)
+  # Scatter plot of Training set
+    plot(TrainingSet$medv,Model.training, col = "red" )
+    plot(TestingSet$medv,Model.testing, col = "red" )
+    summary(Model)
+    R.training <- cor(TrainingSet$medv,Model.training)
+    R.testing <- cor(TrainingSet$medv,Model.training)
+    
+    R2.training <- R.training^2
+    R2.testing <- R.testing^2
+    
 This project implements a Linear Regression Model to analyze and predict the relationship between dependent and independent variables. Linear regression is a fundamental machine learning algorithm used for predictive modeling, where the goal is to find the best-fitting straight line through the data points.
